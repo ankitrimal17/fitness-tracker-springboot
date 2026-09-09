@@ -19,5 +19,5 @@ COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# PORT is supplied by the hosting platform; 8080 remains a safe local fallback.
-CMD ["sh", "-c", "exec java -jar app.jar --server.port=${PORT:-8080}"]
+# Spring Boot reads PORT from application.properties, with 8080 as its fallback.
+CMD ["java", "-jar", "/app/app.jar"]
