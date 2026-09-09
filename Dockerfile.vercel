@@ -19,5 +19,5 @@ COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# Spring Boot reads PORT from application.properties, with 8080 as its fallback.
-CMD ["/opt/java/openjdk/bin/java", "-jar", "/app/app.jar"]
+# Bind Spring Boot to the port assigned by the hosting platform.
+CMD ["sh", "-c", "exec /opt/java/openjdk/bin/java -jar /app/app.jar --server.port=${PORT:-8080} --server.address=0.0.0.0"]
