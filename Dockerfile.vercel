@@ -1,0 +1,23 @@
+# Build the existing Spring Boot application with its Maven Wrapper.
+FROM eclipse-temurin:25-jdk AS build
+
+WORKDIR /app
+
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+COPY src src
+
+# The repository is developed on Windows; normalize the wrapper script for Linux containers.
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw -DskipTests package
+
+# Run only the already-built Spring Boot application.
+FROM eclipse-temurin:25-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+# PORT is supplied by the hosting platform; 8080 remains a safe local fallback.
+CMD ["sh", "-c", "exec java -jar app.jar --server.port=${PORT:-8080}"]
